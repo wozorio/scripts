@@ -11,21 +11,23 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-function log() {
+log() {
     local MESSAGE="${1}"
     echo "${MESSAGE}" 1>&2
 }
 
-function usage() {
+usage() {
     log "Usage: ${0} PERSONAL_ACCESS_TOKEN ORGANIZATION_NAME AGENT_POOL_NAME [API_VERSION]"
     exit 1
 }
 
-function check_azure_devops_access() {
+check_azure_devops_access() {
     local RESPONSE
     RESPONSE=$(
         curl --silent --header "${HEADER}" "${AGENT_POOLS_URI}" -o /dev/null --write-out "%{http_code}"
     )
+
+    log "INFO: Got a ${RESPONSE} response code from Azure DevOps API"
 
     if [[ ${RESPONSE} -lt 200 || ${RESPONSE} -gt 299 ]]; then
         log "ERROR: Failed accessing Azure DevOps API with HTTP code ${RESPONSE}"
@@ -33,7 +35,7 @@ function check_azure_devops_access() {
     fi
 }
 
-function get_agent_pool_id() {
+get_agent_pool_id() {
     local AGENT_POOL
     AGENT_POOL=$(
         curl \
@@ -53,7 +55,7 @@ function get_agent_pool_id() {
     echo "${AGENT_POOL_ID}"
 }
 
-function get_offline_agents() {
+get_offline_agents() {
     local AGENT_POOL_ID="${1}"
 
     local AGENTS_URI="https://dev.azure.com/${ORGANIZATION_NAME}/_apis/distributedtask/pools/${AGENT_POOL_ID}/agents?api-version=${API_VERSION}"
@@ -69,7 +71,7 @@ function get_offline_agents() {
     echo "${OFFLINE_AGENTS}"
 }
 
-function delete_offline_agent() {
+delete_offline_agent() {
     local AGENT="${1}"
     local AGENT_POOL_ID="${2}"
 
@@ -85,7 +87,7 @@ function delete_offline_agent() {
     }
 }
 
-function main() {
+main() {
     if [[ "${#}" -ne 3 && "${#}" -ne 4 ]]; then
         usage
     fi
@@ -96,7 +98,7 @@ function main() {
     API_VERSION="${4:-"7.2-preview.1"}"
 
     AGENT_POOLS_URI="https://dev.azure.com/${ORGANIZATION_NAME}/_apis/distributedtask/pools?api-version=${API_VERSION}"
-    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64)
+    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64 | tr -d '\n')
     HEADER="Authorization: Basic ${BASE64_PAT}"
 
     check_azure_devops_access
