@@ -11,17 +11,17 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-function log() {
+log() {
     local MESSAGE="${1}"
     echo "${MESSAGE}" 1>&2
 }
 
-function usage() {
+usage() {
     log "Usage: ${0} PERSONAL_ACCESS_TOKEN ORGANIZATION_NAME PROJECT_NAME [API_VERSION]"
     exit 1
 }
 
-function check_azure_devops_access() {
+check_azure_devops_access() {
     local RESPONSE
     RESPONSE=$(curl --silent --header "${HEADER}" "${NOT_STARTED_BUILDS_URI}" -o /dev/null --write-out "%{http_code}")
 
@@ -31,7 +31,7 @@ function check_azure_devops_access() {
     fi
 }
 
-function get_queued_builds() {
+get_queued_builds() {
     local QUEUED_BUILDS
     QUEUED_BUILDS=$(curl --silent --header "${HEADER}" "${NOT_STARTED_BUILDS_URI}" | jq '.value[].id')
 
@@ -41,7 +41,7 @@ function get_queued_builds() {
     fi
 }
 
-function delete_queued_build() {
+delete_queued_build() {
     local BUILD="${1}"
 
     log "WARN: Deleting ${BUILD} queued build"
@@ -56,7 +56,7 @@ function delete_queued_build() {
     }
 }
 
-function main() {
+main() {
     if [[ "${#}" -ne 3 && "${#}" -ne 4 ]]; then
         usage
     fi
@@ -67,7 +67,7 @@ function main() {
     API_VERSION="${4:-"7.1-preview.7"}"
 
     NOT_STARTED_BUILDS_URI="https://dev.azure.com/${ORGANIZATION_NAME}/${PROJECT_NAME}/_apis/build/builds?statusFilter=notStarted&${API_VERSION}"
-    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64)
+    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64 | tr -d '\n')
     HEADER="Authorization: Basic ${BASE64_PAT}"
 
     check_azure_devops_access
