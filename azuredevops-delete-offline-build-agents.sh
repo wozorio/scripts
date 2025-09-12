@@ -23,11 +23,7 @@ usage() {
 
 check_azure_devops_access() {
     local RESPONSE
-    RESPONSE=$(
-        curl --silent --header "${HEADER}" "${AGENT_POOLS_URI}" -o /dev/null --write-out "%{http_code}"
-    )
-
-    log "INFO: Got a ${RESPONSE} response code from Azure DevOps API"
+    RESPONSE=$(curl --silent --header "${HEADER}" "${AGENT_POOLS_URI}" -o /dev/null --write-out "%{http_code}")
 
     if [[ ${RESPONSE} -lt 200 || ${RESPONSE} -gt 299 ]]; then
         log "ERROR: Failed accessing Azure DevOps API with HTTP code ${RESPONSE}"
@@ -98,7 +94,7 @@ main() {
     API_VERSION="${4:-"7.2-preview.1"}"
 
     AGENT_POOLS_URI="https://dev.azure.com/${ORGANIZATION_NAME}/_apis/distributedtask/pools?api-version=${API_VERSION}"
-    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64 | tr -d '\n')
+    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64 -w 0)
     HEADER="Authorization: Basic ${BASE64_PAT}"
 
     check_azure_devops_access

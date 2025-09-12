@@ -67,7 +67,7 @@ main() {
     API_VERSION="${4:-"7.1-preview.7"}"
 
     NOT_STARTED_BUILDS_URI="https://dev.azure.com/${ORGANIZATION_NAME}/${PROJECT_NAME}/_apis/build/builds?statusFilter=notStarted&${API_VERSION}"
-    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64 | tr -d '\n')
+    BASE64_PAT=$(printf "%s" ":${PERSONAL_ACCESS_TOKEN}" | base64 -w 0)
     HEADER="Authorization: Basic ${BASE64_PAT}"
 
     check_azure_devops_access
