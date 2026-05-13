@@ -13,7 +13,6 @@
 
 __author__ = "Wellington Ozorio <wozorio@duck.com>"
 
-import sys
 import time
 
 import click
@@ -95,7 +94,7 @@ def cancel_build(build_client: BuildClient, project: str, build_id: int) -> None
         time.sleep(5)
 
     log(f"Timed out waiting for build {build_id} to be cancelled")
-    sys.exit(1)
+    exit(1)
 
 
 if __name__ == "__main__":
