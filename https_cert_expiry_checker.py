@@ -29,7 +29,7 @@ from sendgrid.helpers.mail import Mail
 EMAIL_ADDRESS_PATTERN = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 
 EMAIL_TEMPLATE = Template("""
-<p>Dear Site Reliability Engineer,</p>
+<p>Dear Engineer,</p>
 <p>This is to notify you that the TLS certificate for <b>{{ url }}</b> is expiring on {{ cert_expiry_date }}.</p>
 <p>Please, ensure that the certificate is renewed in a timely fashion.
 There are {{ days_before_cert_expires }} days remaining.</p>
