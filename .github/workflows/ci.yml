@@ -10,7 +10,6 @@ defaults:
 
 jobs:
   lint:
-    name: Run ShellCheck
     runs-on: ubuntu-latest
 
     permissions:
@@ -20,8 +19,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Lint
-        uses: azohra/shell-linter@latest
+      - uses: astral-sh/ruff-action@v3
+      - uses: Azbagheri/shell-linter@latest
         with:
           exclude-paths: LICENSE
