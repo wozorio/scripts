@@ -10,7 +10,6 @@ defaults:
 
 jobs:
   lint:
-    name: Run ShellCheck
     runs-on: ubuntu-latest
 
     permissions:
