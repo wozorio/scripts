@@ -61,10 +61,7 @@ def validate_email_addresses(value: str) -> list[str]:
 @click.argument("recipients", type=validate_email_addresses)
 @click.option("--threshold", default=60, type=int, help="days before expiry to notify (default: 60)")
 def main(url: str, sender: str, recipients: list[str], threshold: int) -> None:
-    """Check the expiration date of HTTPS/SSL certificates and notify engineers.
-
-    In case the expiration date is less than the `threshold` argument in days.
-    """
+    """Check the expiration date of HTTPS certificates and notify engineers."""
     validate_email_address(sender)
 
     check_sendgrid_api_key_env_var()
