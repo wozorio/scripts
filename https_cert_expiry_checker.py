@@ -17,6 +17,7 @@ __author__ = "Wellington Ozorio <wozorio@duck.com>"
 import dataclasses
 import os
 import re
+import sys
 from datetime import datetime, timedelta, timezone
 from urllib.request import socket, ssl
 
@@ -96,15 +97,15 @@ def validate_email_address(email_address: str) -> None:
     match = EMAIL_ADDRESS_PATTERN.match(email_address)
 
     if not match:
-        error = "Email address format %s is not valid", email_address
-        raise ValueError(error)
+        log("Email address format %s is not valid", email_address)
+        sys.exit(1)
 
 
 def check_sendgrid_api_key_env_var() -> None:
     """Check whether the environment variable with Sendgrid API key is set."""
     if not os.getenv("SENDGRID_API_KEY"):
-        error = "SENDGRID_API_KEY environment variable is not set"
-        raise RuntimeError(error)
+        log("SENDGRID_API_KEY environment variable is not set")
+        sys.exit(1)
 
 
 def check_url(url: str) -> None:

@@ -3,4 +3,8 @@ indent-width = 4
 
 [lint]
 select = ["ALL"]
-ignore = ["D100"]
+ignore = [
+  "ANN003", # missing-type-kwargs
+  "D100",   # undocumented-public-module
+  "S607"    # start-process-with-partial-path
+]
