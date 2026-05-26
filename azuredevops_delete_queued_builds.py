@@ -11,6 +11,7 @@
 
 __author__ = "Wellington Ozorio <wozorio@duck.com>"
 
+import os
 import sys
 import time
 
@@ -22,12 +23,13 @@ from msrest.authentication import BasicAuthentication
 
 
 @click.command()
-@click.argument("personal_access_token")
 @click.argument("organization")
 @click.argument("project")
-def main(personal_access_token: str, organization: str, project: str) -> None:
+def main(organization: str, project: str) -> None:
     """Batch delete queued builds ("pipeline runs") in Azure DevOps."""
-    build_client = get_build_client(organization, personal_access_token)
+    check_azure_devops_ext_pat_env_var()
+
+    build_client = get_build_client(organization)
 
     queued_builds = get_queued_builds(build_client, project)
     for build_id in queued_builds:
@@ -39,9 +41,16 @@ def log(message: str) -> None:
     click.echo(message, err=True)
 
 
-def get_build_client(organization: str, personal_access_token: str) -> BuildClient:
+def check_azure_devops_ext_pat_env_var() -> None:
+    """Check whether the environment variable with Azure DevOps PAT is set."""
+    if not os.getenv("AZURE_DEVOPS_EXT_PAT"):
+        log("AZURE_DEVOPS_EXT_PAT environment variable is not set")
+        sys.exit(1)
+
+
+def get_build_client(organization: str) -> BuildClient:
     """Return an authenticated Azure DevOps build client for the given organization."""
-    credentials = BasicAuthentication("", personal_access_token)
+    credentials = BasicAuthentication("", os.getenv("AZURE_DEVOPS_EXT_PAT"))
     connection = Connection(
         base_url=f"https://dev.azure.com/{organization}",
         creds=credentials,
