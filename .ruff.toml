@@ -1,10 +1,10 @@
 line-length = 125
-indent-width = 4
 
 [lint]
 select = ["ALL"]
 ignore = [
-  "ANN003", # missing-type-kwargs
-  "D100",   # undocumented-public-module
-  "S607"    # start-process-with-partial-path
+  "ANN003", # Missing type annotation for **{name}
+  "COM812", # Trailing comma missing
+  "D100",   # Missing docstring in public module
+  "S607",   # Starting a process with a partial executable path
 ]
