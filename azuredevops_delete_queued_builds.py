@@ -43,14 +43,14 @@ def log(message: str) -> None:
 
 def check_azure_devops_ext_pat_env_var() -> None:
     """Check whether the environment variable with Azure DevOps PAT is set."""
-    if not os.getenv("AZURE_DEVOPS_EXT_PAT"):
+    if "AZURE_DEVOPS_EXT_PAT" not in os.environ:
         log("AZURE_DEVOPS_EXT_PAT environment variable is not set")
         sys.exit(1)
 
 
 def get_build_client(organization: str) -> BuildClient:
     """Return an authenticated Azure DevOps build client for the given organization."""
-    credentials = BasicAuthentication("", os.getenv("AZURE_DEVOPS_EXT_PAT"))
+    credentials = BasicAuthentication("", os.environ["AZURE_DEVOPS_EXT_PAT"])
     connection = Connection(
         base_url=f"https://dev.azure.com/{organization}",
         creds=credentials,
@@ -92,14 +92,14 @@ def cancel_build(build_client: BuildClient, project: str, build_id: int) -> None
 
     deadline = start + timeout_in_seconds
 
-    while start < deadline:
+    while time.monotonic() < deadline:
         build = build_client.get_build(project=project, build_id=build_id)
         # Build status
         # https://learn.microsoft.com/en-us/rest/api/azure/devops/build/builds/update-build?view=azure-devops-rest-7.1#buildstatus
         if build.status == "completed":
             return
         log(f"Waiting for build {build_id} to be cancelled")
-        time.sleep(5)
+        time.sleep(2)
 
     log(f"Timed out waiting for build {build_id} to be cancelled")
     sys.exit(1)
