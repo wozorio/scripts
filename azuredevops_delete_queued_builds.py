@@ -87,10 +87,8 @@ def cancel_build(build_client: BuildClient, project: str, build_id: int) -> None
         build_id=build_id,
     )
 
-    start = time.monotonic()
     timeout_in_seconds = 180
-
-    deadline = start + timeout_in_seconds
+    deadline = time.monotonic() + timeout_in_seconds
 
     while time.monotonic() < deadline:
         build = build_client.get_build(project=project, build_id=build_id)
@@ -99,7 +97,7 @@ def cancel_build(build_client: BuildClient, project: str, build_id: int) -> None
         if build.status == "completed":
             return
         log(f"Waiting for build {build_id} to be cancelled")
-        time.sleep(2)
+        time.sleep(1)
 
     log(f"Timed out waiting for build {build_id} to be cancelled")
     sys.exit(1)
