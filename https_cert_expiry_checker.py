@@ -20,7 +20,7 @@ import re
 import socket
 import ssl
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import click
 import requests
@@ -70,7 +70,7 @@ def main(domain: str, sender: str, recipients: list[str], threshold: int) -> Non
 
     check_domain(domain)
 
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     cert_expiry_date = get_cert_expiry_date(domain)
     days_before_cert_expires = (cert_expiry_date - now).days
 
@@ -120,7 +120,7 @@ def get_cert_expiry_date(domain: str, port: int = 443) -> datetime:
     context = ssl.create_default_context()
     with socket.create_connection((domain, port)) as sock, context.wrap_socket(sock, server_hostname=domain) as ssock:
         cert = ssock.getpeercert()
-        return datetime.strptime(cert["notAfter"], "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
+        return datetime.strptime(cert["notAfter"], "%b %d %H:%M:%S %Y %Z").replace(tzinfo=UTC)
 
 
 def send_email(domain: str, email: Email, cert_expiry_date: datetime, days_before_cert_expires: int) -> None:
