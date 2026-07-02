@@ -19,7 +19,7 @@ from betterstack.uptime.objects import Incident
 @click.command()
 @click.argument("incident_name")
 def main(incident_name: str) -> None:
-    """Delete incidents from BetterStack Uptime by name."""
+    """Batch delete incidents from BetterStack Uptime by name."""
     if "BETTERSTACK_TOKEN" not in os.environ:
         log("Environment variable BETTERSTACK_TOKEN is not set")
         sys.exit(1)
