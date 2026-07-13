@@ -42,9 +42,13 @@ def log(message: str) -> None:
 
 
 def get_incidents(api: UptimeAPI, name: str) -> list[Incident]:
-    """Return all incidents whose name matches the provided name argument."""
+    """Return all incidents whose name matches the provided name argument and the status is not Acknowledged or Resolved."""
     incidents = Incident.get_all_instances(api)
-    return [incident for incident in incidents if name == incident.name and incident.status.lower() != "resolved"]
+    return [
+        incident
+        for incident in incidents
+        if name == incident.name and incident.status.lower() not in ("acknowledged", "resolved")
+    ]
 
 
 def delete_incident(incident: Incident) -> None:
