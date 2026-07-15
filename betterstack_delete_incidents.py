@@ -49,7 +49,7 @@ def get_incidents(api: UptimeAPI, pattern: str) -> list[Incident]:
     return [
         incident
         for incident in incidents
-        if fnmatch(incident.name, pattern) and incident.status.lower() not in ("acknowledged", "resolved")
+        if incident.name and fnmatch(incident.name, pattern) and not (incident.is_acknowledged or incident.is_resolved)
     ]
 
 
