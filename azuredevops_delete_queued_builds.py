@@ -35,7 +35,7 @@ def main(organization: str, project: str) -> None:
     for build_id in queued_builds:
         try:
             delete_build(build_client, project, build_id)
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             log(f"Failed to delete build {build_id}: {error}")
 
 
