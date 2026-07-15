@@ -7,5 +7,6 @@ select = ["ALL"]
 ignore = [
   "ANN003", # missing-type-kwargs
   "D100",   # undocumented-public-module
+  "FBT001", # boolean-type-hint-positional-argument
   "S607"    # start-process-with-partial-path
 ]
