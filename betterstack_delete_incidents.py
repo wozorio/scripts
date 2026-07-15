@@ -8,6 +8,8 @@
 # ]
 # ///
 
+__author__ = "Wellington Ozorio <wozorio@duck.com>"
+
 import os
 import sys
 from fnmatch import fnmatch
