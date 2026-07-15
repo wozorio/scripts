@@ -33,7 +33,10 @@ def main(organization: str, project: str) -> None:
 
     queued_builds = get_queued_builds(build_client, project)
     for build_id in queued_builds:
-        delete_build(build_client, project, build_id)
+        try:
+            delete_build(build_client, project, build_id)
+        except Exception as error:
+            log(f"Failed to delete build {build_id}: {error}")
 
 
 def log(message: str) -> None:
@@ -99,8 +102,8 @@ def cancel_build(build_client: BuildClient, project: str, build_id: int) -> None
         log(f"Waiting for build {build_id} to be cancelled")
         time.sleep(1)
 
-    log(f"Timed out waiting for build {build_id} to be cancelled")
-    sys.exit(1)
+    error_message = f"Timed out waiting for build {build_id} to be cancelled"
+    raise RuntimeError(error_message)
 
 
 if __name__ == "__main__":
