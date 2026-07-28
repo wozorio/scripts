@@ -16,7 +16,6 @@ import os
 import re
 import socket
 import ssl
-import sys
 from datetime import UTC, datetime, timedelta
 
 import click
@@ -62,8 +61,8 @@ def main(domain: str, sender: str, recipients: tuple[str], threshold: int) -> No
     """Check the expiration date of HTTPS certificates and notify engineers."""
     validate_email_address(sender)
     if "SENDGRID_API_KEY" not in os.environ:
-        log("SENDGRID_API_KEY environment variable is not set")
-        sys.exit(1)
+        message = "SENDGRID_API_KEY environment variable is not set"
+        raise click.ClickException(message)
 
     now = datetime.now(tz=UTC)
     cert_expiry_date = get_cert_expiry_date(domain)
@@ -104,7 +103,17 @@ def get_cert_expiry_date(domain: str, port: int = 443) -> datetime:
     context = ssl.create_default_context()
     with socket.create_connection((domain, port)) as sock, context.wrap_socket(sock, server_hostname=domain) as ssock:
         cert = ssock.getpeercert()
-        return datetime.strptime(cert["notAfter"], "%b %d %H:%M:%S %Y %Z").replace(tzinfo=UTC)
+
+    if cert is None:
+        message = f"Could not retrieve certificate for {domain}"
+        raise click.ClickException(message)
+
+    not_after = cert.get("notAfter")
+    if not isinstance(not_after, str):
+        message = f"Certificate for {domain} does not contain a valid notAfter field"
+        raise click.ClickException(message)
+
+    return datetime.strptime(not_after, "%b %d %H:%M:%S %Y %Z").replace(tzinfo=UTC)
 
 
 def send_email(domain: str, email: Email, cert_expiry_date: datetime, days_before_cert_expires: int) -> None:

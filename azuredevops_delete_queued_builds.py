@@ -12,7 +12,6 @@
 __author__ = "Wellington Ozorio <wozorio@duck.com>"
 
 import os
-import sys
 import time
 
 import click
@@ -47,8 +46,8 @@ def log(message: str) -> None:
 def check_azure_devops_ext_pat_env_var() -> None:
     """Check whether the environment variable with Azure DevOps PAT is set."""
     if "AZURE_DEVOPS_EXT_PAT" not in os.environ:
-        log("AZURE_DEVOPS_EXT_PAT environment variable is not set")
-        sys.exit(1)
+        message = "AZURE_DEVOPS_EXT_PAT environment variable is not set"
+        raise click.ClickException(message)
 
 
 def get_build_client(organization: str) -> BuildClient:
