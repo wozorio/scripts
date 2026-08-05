@@ -37,7 +37,10 @@ def main(incident_name_pattern: str, dry_run: bool) -> None:
         return
 
     for incident in incidents_to_delete:
-        delete_incident(incident, dry_run)
+        try:
+            delete_incident(incident, dry_run)
+        except Exception as error:  # noqa: BLE001
+            log(f"Failed to delete incident ({incident.id}) {incident.name} with error: {error}")
 
 
 def log(message: str) -> None:
@@ -58,7 +61,7 @@ def get_incidents(api: UptimeAPI, pattern: str) -> list[Incident]:
 def delete_incident(incident: Incident, dry_run: bool) -> None:
     """Delete a single incident, or just log it if dry_run is True."""
     action = "Would delete" if dry_run else "Deleting"
-    log(f"{action} incident {incident.id}: {incident.name}")
+    log(f"{action} incident ({incident.id}) {incident.name}")
     if not dry_run:
         incident.delete()
 
